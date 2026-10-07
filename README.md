@@ -40,7 +40,6 @@ Execute:
 ```bash
 poetry run mkdocs serve
 ```
-https://jeanvitorvieira.github.io/trabalho-eng-dados-apache-spark
 
 A documentação estará disponível em:
 
@@ -50,7 +49,7 @@ http://127.0.0.1:8000/
 
 ### Documentação publicada
 
-> Adicionar aqui o link do GitHub Pages após executar `mkdocs gh-deploy`.
+[> Link do GitHub Pages (`mkdocs gh-deploy`).](https://jeanvitorvieira.github.io/trabalho-eng-dados-apache-spark)
 
 ---
 
