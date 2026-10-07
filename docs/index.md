@@ -32,10 +32,10 @@ Para garantir profundidade técnica e uma abordagem colaborativa, o trabalho foi
 
 | Módulo / Página | Tecnologia / Foco | Responsável | Status |
 | :--- | :--- | :--- | :--- |
-| **Contextualização** | Fundamentação teórica, objetivos e cenário do trabalho | Colega de Equipe | *Base estruturada* |
-| **Apache Spark** | Arquitetura distribuída, PySpark, Catalyst, Tungsten, RDDs e DataFrames | Mateus | **Concluído** |
-| **Apache Iceberg** | Metadados em camadas, ACID, Cenário do Dataset, DDL, INSERT/UPDATE/DELETE | Mateus | **Concluído** |
-| **Delta Lake** | Delta Log, operações transacionais, comandos DML e otimizações | Colega de Equipe | *Área de integração* |
+| **Contextualização** | Fundamentação teórica, objetivos e cenário do trabalho | *Base estruturada* |
+| **Apache Spark** | Arquitetura distribuída, PySpark, Catalyst, Tungsten, RDDs e DataFrames | **Concluído** |
+| **Apache Iceberg** | Metadados em camadas, ACID, Cenário do Dataset, DDL, INSERT/UPDATE/DELETE | **Concluído** |
+| **Delta Lake** | Delta Log, operações transacionais, comandos DML e otimizações | *Área de integração* |
 
 ---
 

@@ -13,7 +13,7 @@ flowchart TD
         M1 --> D1[Disco HDFS]
         D1 --> R1[Reduce 1]
         R1 --> D2[Disco HDFS]
-        D2 --> M2[Map 2 (Próxima Fase)]
+        D2 --> M2["Map 2 (Próxima Fase)"]
         M2 --> D3[Disco HDFS]
         D3 --> R2[Reduce 2]
         R2 --> S1[Saída Final HDFS]
@@ -225,7 +225,7 @@ flowchart LR
         A4["df.write.save()"]
     end
 
-    Transformacoes -->|Cria o Grafo Lógico (DAG)| Acoes
+    Transformacoes -->|"Cria o Grafo Lógico (DAG)"| Acoes
 ```
 
 - **Transformações**: Criam um novo DataFrame a partir de um existente (ex.: `filter()`, `select()`, `groupBy()`, `join()`). O Spark **não processa nenhum dado** quando uma transformação é declarada; ele apenas anota a operação no grafo de linhagem.
@@ -280,18 +280,18 @@ Quando uma ação é disparada, o Spark decompõe o trabalho na seguinte hierarq
 
 ```mermaid
 flowchart TD
-    App[Aplicação Spark] --> J1[Job 1 (Disparado pela Ação df.count)]
-    App --> J2[Job 2 (Disparado pela Ação df.writeTo.append)]
+    App[Aplicação Spark] --> J1["Job 1 (Disparado pela Ação df.count)"]
+    App --> J2["Job 2 (Disparado pela Ação df.writeTo.append)"]
     
-    J2 --> S1[Stage 1 (Narrow: Leitura e Filtros)]
-    J2 -->|SHUFFLE BOUNDARY| S2[Stage 2 (Wide: Agrupamento / Escrita)]
+    J2 --> S1["Stage 1 (Narrow: Leitura e Filtros)"]
+    J2 -->|"SHUFFLE BOUNDARY"| S2["Stage 2 (Wide: Agrupamento / Escrita)"]
     
-    S1 --> T1A[Task 1 (Partição 1)]
-    S1 --> T1B[Task 2 (Partição 2)]
-    S1 --> T1C[Task 3 (Partição 3)]
+    S1 --> T1A["Task 1 (Partição 1)"]
+    S1 --> T1B["Task 2 (Partição 2)"]
+    S1 --> T1C["Task 3 (Partição 3)"]
     
-    S2 --> T2A[Task 4]
-    S2 --> T2B[Task 5]
+    S2 --> T2A["Task 4"]
+    S2 --> T2B["Task 5"]
 ```
 
 - **Job**: Corresponde a uma ação invocada no código (ex.: cada `.count()` ou `.write` gera um Job).
