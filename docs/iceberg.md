@@ -11,7 +11,7 @@ flowchart TD
     subgraph HiveLegacy["Tabelas Tradicionais Hive (Baseadas em Diretórios)"]
         HDir["Diretório de Armazenamento<br>/tabela/ano=2024/mes=10/"]
         HMet["Hive Metastore (Banco Relacional Externo)<br>Mapeia diretórios físicos"]
-        HDir -.->|Listagem cara O(N) de arquivos| HRead["Leitura Lenta & Inconsistente"]
+        HDir -.->|"Listagem cara O(N) de arquivos"| HRead["Leitura Lenta & Inconsistente"]
         HMet -.->|Sem transações ACID| HFail["Falhas deixam dados corrompidos"]
     end
 
