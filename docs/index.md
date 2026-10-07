@@ -8,7 +8,7 @@ Este projeto tem como objetivo explorar, fundamentar e aplicar na prática os co
 
 Historicamente, os ambientes de dados eram divididos em dois silos distintos:
 
-```mermaid
+```text
 flowchart LR
     subgraph SiloTradicional["Arquitetura Legada Bi-modal"]
         D1[Data Lake<br>Armazenamento Barato / Não estruturado<br>HDFS / S3 / Blob<br>Sem ACID / Baixa Governança]
@@ -43,7 +43,7 @@ Para garantir profundidade técnica e uma abordagem colaborativa, o trabalho foi
 
 No pipeline prático desenvolvido no projeto, adotamos o padrão de arquitetura em **Medalhão** (Multi-hop Architecture), organizando os dados em camadas de qualidade progressiva:
 
-```mermaid
+```text
 flowchart LR
     Raw[Fonte Bruta<br>CSV Metacritic] -->|Ingestão & Filtro de Nulos| BronzeJogos[Bronze: local.bronze.jogos<br>Dados Limpos e Tipados]
     Raw -->|Isolamento de Inconsistências| Quarentena[Bronze: local.bronze.quarentena<br>Registros com Nulos]

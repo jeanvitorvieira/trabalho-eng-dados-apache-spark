@@ -691,6 +691,22 @@ files = [
 ]
 
 [[package]]
+name = "delta-spark"
+version = "3.3.3"
+description = "Python APIs for using Delta Lake with Apache Spark"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "delta_spark-3.3.3-py3-none-any.whl", hash = "sha256:f44ee1f46e16003276e54743aa9e3f19b7375dd3be9d126be0793485c29b1cee"},
+    {file = "delta_spark-3.3.3.tar.gz", hash = "sha256:bd2cb2912066f5f59029f3cbd02841dd6bfbd3c350aa2033583f7de1627e83e2"},
+]
+
+[package.dependencies]
+importlib_metadata = ">=1.0.0"
+pyspark = ">=3.5.3,<3.6.0"
+
+[[package]]
 name = "docstring-to-markdown"
 version = "0.17"
 description = "On the fly conversion of Python docstrings to markdown"
@@ -849,7 +865,7 @@ version = "9.0.1"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "importlib_metadata-9.0.1-py3-none-any.whl", hash = "sha256:bba5600596a7e21f3eef53281cf28d6a5195634d2f2b78ff9501a3272c6eaab0"},
     {file = "importlib_metadata-9.0.1.tar.gz", hash = "sha256:ab830580bc0ef3db61ce8fae716389e5462b67e033018bab6d8f80ef17172f99"},
@@ -3124,7 +3140,7 @@ version = "4.1.1"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 optional = false
 python-versions = ">=3.10"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "zipp-4.1.1-py3-none-any.whl", hash = "sha256:8979f52d874162f485ff2981e3891f3a3317b7a3dd43ff1e1775b9304f307a9c"},
     {file = "zipp-4.1.1.tar.gz", hash = "sha256:7ebb7a44c021b29fd8dbd7cce6812d0d7b5b454521f93cc71af6ccd155aaa70b"},
@@ -3141,4 +3157,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "023f5df9a77fbcf9cf317c33c83407bdf1345a4322aff7e3b86ab2d4f8526e16"
+content-hash = "6b0d9cc52139ae1a64d4a7489d9983d1de7c487fb5ef74378bd1747879080189"

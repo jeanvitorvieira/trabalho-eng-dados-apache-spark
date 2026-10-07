@@ -1,6 +1,6 @@
 site_name: "Engenharia de Dados: Apache Spark & Lakehouse"
 site_description: "Estudo aprofundado e prático sobre Apache Spark (PySpark), Apache Iceberg e Delta Lake para arquiteturas de Data Lakehouse."
-site_author: "Mateus e Equipe"
+site_author: "Jean Vitor e Mateus"
 
 theme:
   name: material

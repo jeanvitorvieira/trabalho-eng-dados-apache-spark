@@ -6,7 +6,7 @@
 
 O **Apache Spark** é uma das tecnologias mais fundamentais e amplamente adotadas no cenário moderno de Engenharia de Dados e Computação Distribuída. Desenvolvido originalmente em 2009 no AMPLab da Universidade da Califórnia em Berkeley (liderado por Matei Zaharia) e posteriormente doado à Apache Software Foundation em 2013, o Spark nasceu com o propósito explícito de superar os graves gargalos de desempenho e usabilidade do modelo **Hadoop MapReduce**.
 
-```mermaid
+```text
 flowchart TD
     subgraph HadoopMapReduce["Hadoop MapReduce (Baseado em Disco)"]
         H1[Entrada HDFS] --> M1[Map 1]
@@ -54,7 +54,7 @@ O **PySpark** é a interface e biblioteca Python oficial para o Apache Spark. El
 
 Muitos desenvolvedores acreditam erroneamente que o PySpark executa todo o processamento em Python puro. Na realidade, o núcleo do Spark opera na JVM. O PySpark utiliza uma ponte de comunicação interprocessos (**IPC via Sockets TCP**) viabilizada pela biblioteca **Py4J**.
 
-```mermaid
+```text
 flowchart TB
     subgraph DriverNode["Nó Driver"]
         PyDriver["Processo Python (Driver)<br>Código do Usuário / Script / Jupyter"]
@@ -106,7 +106,7 @@ flowchart TB
 
 O Apache Spark opera sob o modelo mestre-escravo (*Master-Slave* ou *Driver-Worker*):
 
-```mermaid
+```text
 classDiagram
     class DriverProgram {
         +SparkSession
@@ -166,7 +166,7 @@ classDiagram
 
 O Apache Spark evoluiu suas estruturas de dados ao longo dos anos para equilibrar flexibilidade de programação com otimização automática de hardware.
 
-```mermaid
+```text
 timeline
     title Evolução das Abstrações do Apache Spark
     2011 : RDD (Resilient Distributed Datasets) : Baixo nível, flexível, controle total, sem otimização de schema
@@ -209,7 +209,7 @@ Compreender o ciclo de vida de uma aplicação Spark é essencial para arquiteta
 
 No Apache Spark, as operações aplicadas a um DataFrame dividem-se rigorosamente em duas categorias:
 
-```mermaid
+```text
 flowchart LR
     subgraph Transformacoes["Transformações (Lazy / Não executam imediatamente)"]
         T1["df.filter(...)"]
@@ -240,7 +240,7 @@ flowchart LR
 
 A distinção mais crítica de desempenho no Spark reside em como os dados se movem entre as partições do cluster:
 
-```mermaid
+```text
 flowchart TD
     subgraph Narrow["Transformações Estreitas (Narrow Transformations) - SEM SHUFFLE"]
         direction LR
@@ -278,7 +278,7 @@ flowchart TD
 
 Quando uma ação é disparada, o Spark decompõe o trabalho na seguinte hierarquia:
 
-```mermaid
+```text
 flowchart TD
     App[Aplicação Spark] --> J1[Job 1 (Disparado pela Ação df.count)]
     App --> J2[Job 2 (Disparado pela Ação df.writeTo.append)]
@@ -308,7 +308,7 @@ O diferencial que torna o Apache Spark o padrão industrial de mercado é a comb
 
 O Catalyst converte a expressão relacional do usuário no plano físico mais eficiente possível através de 4 fases estruturadas:
 
-```mermaid
+```text
 flowchart LR
     Code["Código SQL / DataFrame"] --> P1["1. Análise<br>(Resolve nomes no Catálogo)"]
     P1 --> P2["2. Otimização Lógica<br>(Regras de reescrita / Predicate Pushdown)"]
