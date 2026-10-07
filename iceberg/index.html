@@ -1,0 +1,1781 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Estudo aprofundado e prático sobre Apache Spark (PySpark), Apache Iceberg e Delta Lake para arquiteturas de Data Lakehouse.">
+      
+      
+        <meta name="author" content="Jean Vitor e Mateus">
+      
+      
+      
+        <link rel="prev" href="../spark/">
+      
+      
+        <link rel="next" href="../delta/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Apache Iceberg - Engenharia de Dados: Apache Spark & Lakehouse</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#apache-iceberg-formato-aberto-de-tabelas-para-lakehouse" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="Engenharia de Dados: Apache Spark &amp; Lakehouse" class="md-header__button md-logo" aria-label="Engenharia de Dados: Apache Spark & Lakehouse" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Engenharia de Dados: Apache Spark & Lakehouse
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Apache Iceberg
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Alternar para modo claro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo claro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Alternar para modo escuro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo escuro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contextualização
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../spark/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Apache Spark (PySpark)
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Apache Iceberg
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../delta/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Delta Lake
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Engenharia de Dados: Apache Spark &amp; Lakehouse" class="md-nav__button md-logo" aria-label="Engenharia de Dados: Apache Spark & Lakehouse" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Engenharia de Dados: Apache Spark & Lakehouse
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextualização
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Spark (PySpark)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introducao-e-contexto-do-apache-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introdução e Contexto do Apache Iceberg
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introdução e Contexto do Apache Iceberg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-problema-das-tabelas-hive-em-nuvem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O Problema das Tabelas Hive em Nuvem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-solucao-do-apache-iceberg-rastreamento-em-nivel-de-arquivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Solução do Apache Iceberg: Rastreamento em Nível de Arquivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-arquitetura-interna-do-apache-iceberg-as-3-camadas-de-metadados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Arquitetura Interna do Apache Iceberg: As 3 Camadas de Metadados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Arquitetura Interna do Apache Iceberg: As 3 Camadas de Metadados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detalhamento-das-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detalhamento das Camadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-real-a-estrutura-fisica-no-nosso-projeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidência Real: A Estrutura Física no Nosso Projeto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-recursos-chave-do-apache-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Recursos Chave do Apache Iceberg
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cenario-pratico-do-trabalho-o-conjunto-de-dados-metacritic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cenário Prático do Trabalho: O Conjunto de Dados Metacritic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Cenário Prático do Trabalho: O Conjunto de Dados Metacritic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#descricao-do-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descrição do Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dicionario-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dicionário de Dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modelo-logico-de-dados-e-diagrama-entidade-relacionamento-er" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modelo Lógico de Dados e Diagrama Entidade-Relacionamento (ER)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#codigos-ddl-data-definition-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Códigos DDL (Data Definition Language)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-evidencias-praticas-de-crud-no-apache-iceberg-com-pyspark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Evidências Práticas de CRUD no Apache Iceberg com PySpark
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Evidências Práticas de CRUD no Apache Iceberg com PySpark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuracao-inicial-da-sessao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração Inicial da Sessão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-ingestao-e-carga-inicial-insert-em-lote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Ingestão e Carga Inicial (INSERT em Lote)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-insert-incremental-de-novos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. INSERT Incremental de Novos Dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-operacoes-de-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Operações de UPDATE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Operações de UPDATE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metodo-a-update-via-sql-ansi-puro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método A: UPDATE via SQL ANSI Puro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metodo-b-update-em-lote-via-dataframe-com-fwhen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método B: UPDATE em Lote via DataFrame com F.when()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-operacoes-de-delete-com-merge-into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Operações de DELETE com MERGE INTO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Operações de DELETE com MERGE INTO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-quantitativa-no-snapshot-do-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidência Quantitativa no Snapshot do Iceberg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-time-travel-e-inspecao-de-metadados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Time Travel e Inspeção de Metadados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Time Travel e Inspeção de Metadados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consultando-a-tabela-de-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consultando a Tabela de Snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-realizar-consultas-com-time-travel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como Realizar Consultas com Time Travel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-conclusao-e-proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Conclusão e Próximos Passos
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Delta Lake
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introducao-e-contexto-do-apache-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introdução e Contexto do Apache Iceberg
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introdução e Contexto do Apache Iceberg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#o-problema-das-tabelas-hive-em-nuvem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O Problema das Tabelas Hive em Nuvem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-solucao-do-apache-iceberg-rastreamento-em-nivel-de-arquivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Solução do Apache Iceberg: Rastreamento em Nível de Arquivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-arquitetura-interna-do-apache-iceberg-as-3-camadas-de-metadados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Arquitetura Interna do Apache Iceberg: As 3 Camadas de Metadados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Arquitetura Interna do Apache Iceberg: As 3 Camadas de Metadados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detalhamento-das-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detalhamento das Camadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-real-a-estrutura-fisica-no-nosso-projeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidência Real: A Estrutura Física no Nosso Projeto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-recursos-chave-do-apache-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Recursos Chave do Apache Iceberg
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cenario-pratico-do-trabalho-o-conjunto-de-dados-metacritic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cenário Prático do Trabalho: O Conjunto de Dados Metacritic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Cenário Prático do Trabalho: O Conjunto de Dados Metacritic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#descricao-do-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descrição do Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dicionario-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dicionário de Dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modelo-logico-de-dados-e-diagrama-entidade-relacionamento-er" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modelo Lógico de Dados e Diagrama Entidade-Relacionamento (ER)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#codigos-ddl-data-definition-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Códigos DDL (Data Definition Language)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-evidencias-praticas-de-crud-no-apache-iceberg-com-pyspark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Evidências Práticas de CRUD no Apache Iceberg com PySpark
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Evidências Práticas de CRUD no Apache Iceberg com PySpark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuracao-inicial-da-sessao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuração Inicial da Sessão
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-ingestao-e-carga-inicial-insert-em-lote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Ingestão e Carga Inicial (INSERT em Lote)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-insert-incremental-de-novos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. INSERT Incremental de Novos Dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-operacoes-de-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Operações de UPDATE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Operações de UPDATE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metodo-a-update-via-sql-ansi-puro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método A: UPDATE via SQL ANSI Puro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metodo-b-update-em-lote-via-dataframe-com-fwhen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método B: UPDATE em Lote via DataFrame com F.when()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-operacoes-de-delete-com-merge-into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Operações de DELETE com MERGE INTO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Operações de DELETE com MERGE INTO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-quantitativa-no-snapshot-do-iceberg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidência Quantitativa no Snapshot do Iceberg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-time-travel-e-inspecao-de-metadados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Time Travel e Inspeção de Metadados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Time Travel e Inspeção de Metadados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consultando-a-tabela-de-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consultando a Tabela de Snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-realizar-consultas-com-time-travel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como Realizar Consultas com Time Travel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-conclusao-e-proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Conclusão e Próximos Passos
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="apache-iceberg-formato-aberto-de-tabelas-para-lakehouse">Apache Iceberg: Formato Aberto de Tabelas para Lakehouse<a class="headerlink" href="#apache-iceberg-formato-aberto-de-tabelas-para-lakehouse" title="Permanent link">&para;</a></h1>
+<hr />
+<h2 id="1-introducao-e-contexto-do-apache-iceberg">1. Introdução e Contexto do Apache Iceberg<a class="headerlink" href="#1-introducao-e-contexto-do-apache-iceberg" title="Permanent link">&para;</a></h2>
+<p>O <strong>Apache Iceberg</strong> é um formato aberto de tabela de alto desempenho (<em>Open Table Format</em>) projetado para gerenciar petabytes de dados em arquiteturas analíticas modernas. Criado originalmente na <strong>Netflix</strong> em 2018 por Ryan Blue e Dan Weeks e posteriormente aceito como projeto de nível superior (<em>Top-Level Project</em>) na Apache Software Foundation, o Iceberg foi concebido com uma missão clara: <strong>eliminar os problemas crônicos das tabelas legadas do Apache Hive em ambientes de armazenamento em nuvem (S3, ADLS, GCS e HDFS)</strong>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>flowchart TD
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    subgraph HiveLegacy["Tabelas Tradicionais Hive (Baseadas em Diretórios)"]
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        HDir["Diretório de Armazenamento&lt;br&gt;/tabela/ano=2024/mes=10/"]
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        HMet["Hive Metastore (Banco Relacional Externo)&lt;br&gt;Mapeia diretórios físicos"]
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        HDir -.-&gt;|Listagem cara O(N) de arquivos| HRead["Leitura Lenta &amp; Inconsistente"]
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        HMet -.-&gt;|Sem transações ACID| HFail["Falhas deixam dados corrompidos"]
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    end
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    subgraph IcebergModern["Apache Iceberg (Baseado em Árvore de Metadados)"]
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        Cat["Iceberg Catalog&lt;br&gt;(Ponteiro Atômico para Metadado Atual)"]
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        Meta["Metadados da Tabela (JSON)&lt;br&gt;Snapshots, Schema, Particionamento"]
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        MList["Manifest List (AVRO)&lt;br&gt;Lista de manifests com limites"]
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        MF["Manifest Files (AVRO)&lt;br&gt;Rastreia arquivos Parquet com métricas"]
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        DF["Data Files (Parquet)&lt;br&gt;Arquivos de dados imutáveis"]
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        Cat --&gt; Meta --&gt; MList --&gt; MF --&gt; DF
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    end
+</span></code></pre></div>
+<h3 id="o-problema-das-tabelas-hive-em-nuvem">O Problema das Tabelas Hive em Nuvem<a class="headerlink" href="#o-problema-das-tabelas-hive-em-nuvem" title="Permanent link">&para;</a></h3>
+<p>Durante anos, o padrão industrial para Data Lakes baseou-se na convenção do Apache Hive:
+- <strong>Tabela como um Diretório</strong>: Uma tabela nada mais era do que um caminho no sistema de arquivos, e as partições eram subdiretórios hierárquicos (ex.: <code>/tabela/ano=2024/mes=10/arquivo.parquet</code>).
+- <strong>Listagem de Arquivos Lenta e Não Atômica</strong>: Para consultar dados, o motor precisava executar operações <code>LIST</code> na API de armazenamento de objetos (como o S3). Em tabelas com milhões de arquivos, a simples listagem de diretórios podia levar dezenas de minutos antes de ler um único byte.
+- <strong>Ausência de Transações ACID</strong>: Se um job falhava no meio da gravação, arquivos órfãos permaneciam no diretório, corrompendo consultas de outros usuários. Leitores concorrentes viam dados parciais em tempo real.
+- <strong>Dificuldade Extrema para Modificações (UPDATE e DELETE)</strong>: Atualizar uma única linha exigia reescrever a partição inteira.</p>
+<h3 id="a-solucao-do-apache-iceberg-rastreamento-em-nivel-de-arquivo">A Solução do Apache Iceberg: Rastreamento em Nível de Arquivo<a class="headerlink" href="#a-solucao-do-apache-iceberg-rastreamento-em-nivel-de-arquivo" title="Permanent link">&para;</a></h3>
+<p>O Iceberg define que uma <strong>tabela é um estado gerenciado por uma árvore de metadados imutáveis</strong>, e não um diretório físico:
+1. Ele rastreia cada arquivo de dados individualmente através de <strong>arquivos de manifesto (Manifest Files)</strong>.
+2. Cada operação de escrita gera um <strong>Snapshot</strong> atômico e imutável.
+3. Não há dependência de listagens de diretórios caras (<code>LIST</code> do S3). O motor analítico sabe exatamente quais arquivos ler consultando apenas os metadados.
+4. Suporta transações <strong>ACID completas</strong>, <strong>Time Travel</strong>, <strong>Evolução de Esquema sem dor</strong> e <strong>Particionamento Oculto</strong>.</p>
+<hr />
+<h2 id="2-arquitetura-interna-do-apache-iceberg-as-3-camadas-de-metadados">2. Arquitetura Interna do Apache Iceberg: As 3 Camadas de Metadados<a class="headerlink" href="#2-arquitetura-interna-do-apache-iceberg-as-3-camadas-de-metadados" title="Permanent link">&para;</a></h2>
+<p>A integridade e o alto desempenho do Apache Iceberg derivam de sua estrutura de metadados organizada em três camadas concêntricas:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>flowchart TD
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    subgraph Layer1["1. Camada de Catálogo (Catalog Layer)"]
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        Cat["Iceberg Catalog&lt;br&gt;(Hadoop, REST, Nessie, Hive Metastore, AWS Glue)&lt;br&gt;Garante CAS (Compare-And-Swap) e aponta atomicamente para o vN.metadata.json atual"]
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    end
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    subgraph Layer2["2. Camada de Metadados da Tabela (Table Metadata Layer)"]
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        V4["v4.metadata.json&lt;br&gt;(Snapshot Atual: 5106418812910411597)"]
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        V3["v3.metadata.json&lt;br&gt;(Snapshot Anterior)"]
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        V2["v2.metadata.json"]
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        V1["v1.metadata.json (Criação DDL)"]
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        V4 -.-&gt;|Histórico| V3 -.-&gt;|Histórico| V2 -.-&gt;|Histórico| V1
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    end
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    subgraph Layer3["3. Camada de Manifesto (Manifest Layer)"]
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        SnapAvro["Manifest List: snap-5106418812910411597-1-bc244c7f.avro&lt;br&gt;(Lista todos os manifestos válidos para este snapshot)"]
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        M1["Manifest File: bc244c7f-4567-4664-95b4-m0.avro&lt;br&gt;(Métricas em nível de coluna: min, max, null_count)"]
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        M2["Manifest File: 6d141200-2e71-4cbf-9d78-m0.avro"]
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    end
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    subgraph Layer4["4. Camada de Dados (Data Files)"]
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        DF1["00000-53-ce772571-0-00001.parquet"]
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        DF2["00000-68-766b02eb-0-00001.parquet"]
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        DF3["00002-27-7089a442-0-00001.parquet"]
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    end
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    Cat --&gt; V4
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    V4 --&gt; SnapAvro
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    SnapAvro --&gt; M1
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>    SnapAvro --&gt; M2
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>    M1 --&gt; DF1
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>    M1 --&gt; DF2
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>    M2 --&gt; DF3
+</span></code></pre></div>
+<h3 id="detalhamento-das-camadas">Detalhamento das Camadas<a class="headerlink" href="#detalhamento-das-camadas" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Camada de Catálogo (Catalog Layer)</strong>:</li>
+<li>É a primeira porta de entrada. Armazena o ponteiro para o arquivo de metadado da versão atual da tabela.</li>
+<li>Garante a atomicidade das transações utilizando operações atômicas como <strong>Compare-And-Swap (CAS)</strong> em catálogos como REST, Nessie ou DynamoDB, ou operações atômicas de renomeação em sistemas de arquivos (Hadoop Catalog).</li>
+<li>
+<p>Quando uma nova transação faz commit, o catálogo é atualizado atomicamente para apontar do arquivo <code>v3.metadata.json</code> para o novo <code>v4.metadata.json</code>.</p>
+</li>
+<li>
+<p><strong>Camada de Metadados da Tabela (Table Metadata Layer)</strong>:</p>
+</li>
+<li>Arquivos JSON nomeados sequencialmente (<code>v1.metadata.json</code>, <code>v2.metadata.json</code>, etc.).</li>
+<li>Contêm o esquema da tabela atual e histórico de esquemas, a especificação de particionamento, as propriedades da tabela e a lista completa de todos os <strong>snapshots</strong> históricos.</li>
+<li>
+<p>Cada snapshot aponta para seu respectivo arquivo <strong>Manifest List</strong>.</p>
+</li>
+<li>
+<p><strong>Camada de Lista de Manifestos (Manifest List)</strong>:</p>
+</li>
+<li>Um arquivo binário no formato <strong>Avro</strong> (<code>snap-&lt;snapshot-id&gt;-&lt;tentativa&gt;-&lt;uuid&gt;.avro</code>).</li>
+<li>Lista todos os arquivos de manifesto que compõem o estado daquele snapshot.</li>
+<li>
+<p>Inclui estatísticas das partições cobertas por cada manifesto, permitindo que motores como o Spark façam o <strong>descarte antecipado de manifestos (Manifest Pruning)</strong> sem precisar abrir todos os arquivos.</p>
+</li>
+<li>
+<p><strong>Camada de Arquivos de Manifesto (Manifest Files)</strong>:</p>
+</li>
+<li>Arquivos Avro (<code>&lt;uuid&gt;-m0.avro</code>) que mantêm o inventário individual de arquivos de dados Parquet.</li>
+<li>Para cada arquivo de dados, o manifesto armazena o status do arquivo (adicionado, existente ou deletado) e <strong>estatísticas colunares detalhadas</strong>: valores mínimo e máximo de cada coluna, contagem de registros e contagem de valores nulos.</li>
+<li>Graças a essas estatísticas, o Iceberg elimina arquivos inteiros na leitura (<em>Data Skipping / Predicate Pushdown</em>) antes mesmo de abrir os arquivos Parquet.</li>
+</ol>
+<hr />
+<h3 id="evidencia-real-a-estrutura-fisica-no-nosso-projeto">Evidência Real: A Estrutura Física no Nosso Projeto<a class="headerlink" href="#evidencia-real-a-estrutura-fisica-no-nosso-projeto" title="Permanent link">&para;</a></h3>
+<p>No laboratório prático implementado com PySpark, a tabela <code>local.bronze.jogos</code> gerou exatamente essa estrutura de arquivos no diretório <code>spark-warehouse/iceberg/bronze/jogos/</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>spark-warehouse/iceberg/bronze/jogos/
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>├── metadata/
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├── version-hint.text                           &lt;- Indica a versão atual (4)
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│   ├── v1.metadata.json                            &lt;- Criação da tabela vazia
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│   ├── v2.metadata.json                            &lt;- Ingestão inicial dos 24.476 registros válidos
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│   ├── v3.metadata.json                            &lt;- Inserção de novos jogos (Jogos 2026)
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│   ├── v4.metadata.json                            &lt;- Inserção dos registros retificados da quarentena
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│   ├── snap-6695676003824454030-1-fe5b10a4.avro   &lt;- Manifest List do Snapshot 1
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│   ├── snap-6225175166441985743-1-6d141200.avro   &lt;- Manifest List do Snapshot 2
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│   ├── snap-6461293759149600687-1-dcb782bb.avro   &lt;- Manifest List do Snapshot 3
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│   ├── snap-5106418812910411597-1-bc244c7f.avro   &lt;- Manifest List do Snapshot 4
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│   ├── 6d141200-2e71-4cbf-9d78-0feb475d9ad3-m0.avro
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│   ├── dcb782bb-66b4-4d9f-bfb8-dcdfbe0b31cd-m0.avro
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│   └── bc244c7f-4567-4664-95b4-f493b313a150-m0.avro
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>└── data/
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    ├── 00000-68-766b02eb-3eaa-4ed9-85f6-d62a9c957d78-0-00001.parquet  &lt;- Carga inicial
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    ├── 00002-27-7089a442-d9cd-4e52-a120-acdbceb8d263-0-00001.parquet  &lt;- Jogos 2026
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    └── 00000-53-ce772571-852b-4f86-9bde-c0e63ce36dfe-0-00001.parquet  &lt;- Registros retificados
+</span></code></pre></div>
+<hr />
+<h2 id="3-recursos-chave-do-apache-iceberg">3. Recursos Chave do Apache Iceberg<a class="headerlink" href="#3-recursos-chave-do-apache-iceberg" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mindmap
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  root((Recursos do Iceberg))
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    Garantias ACID
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      Isolamento Snapshot
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>      Controle de Concorrência Otimista OCC
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>      Sem leituras parciais
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    Particionamento Oculto
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>      Transformações transparentes days, months, bucket
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>      Sem colunas artificiais
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>      Partition Pruning automático
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    Evolução de Esquema
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>      Identificação por IDs de coluna imutáveis
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>      Adicionar, renomear, reordenar sem reescrever dados
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    Time Travel
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>      Consultas históricas por Snapshot ID
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>      Consultas por Timestamp
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>      Auditoria e Rollback
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    Modificações Avançadas
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>      Copy-on-Write CoW
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>      Merge-on-Read MoR
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>      Equality &amp; Position Deletes
+</span></code></pre></div>
+<ol>
+<li><strong>Garantias ACID e Controle de Concorrência Otimista (OCC)</strong>:</li>
+<li>Leitores sempre leem um snapshot consistente e fixo da tabela. Enquanto um escritor escreve milhões de linhas, os analistas continuam consultando a versão anterior sem bloqueio (<em>lock-free reads</em>).</li>
+<li>
+<p>Quando dois escritores tentam salvar ao mesmo tempo, o Iceberg detecta se houve conflito de arquivos. Se os arquivos alterados forem disjuntos, ambos os commits são aceitos com sucesso.</p>
+</li>
+<li>
+<p><strong>Particionamento Oculto (Hidden Partitioning)</strong>:</p>
+</li>
+<li>No Hive, se você particionasse por data (<code>ano</code>, <code>mes</code>, <code>dia</code>), o usuário era obrigado a lembrar desses campos e escrever: <code>WHERE ano=2025 AND mes=9 AND dia=15</code>. Se ele escrevesse apenas <code>WHERE data = '2025-09-15'</code>, o Hive fazia um scan de toda a tabela!</li>
+<li>
+<p>No Iceberg, o particionamento é uma função da coluna de dados (ex.: <code>days(release_date)</code>). O usuário consulta naturalmente <code>WHERE release_date &gt;= '2025-09-01'</code>, e o Iceberg traduz automaticamente o filtro para as partições corretas.</p>
+</li>
+<li>
+<p><strong>Evolução de Esquema Segura (Full Schema Evolution)</strong>:</p>
+</li>
+<li>Em tabelas comuns, se você renomear uma coluna ou reordenar colunas em um arquivo Parquet, os dados antigos que usam o nome original podem retornar nulos ou valores corrompidos.</li>
+<li>
+<p>O Iceberg atribui um <strong>ID numérico inteiro único e imutável</strong> a cada coluna. Renomear uma coluna simplesmente altera o mapeamento de metadados; os dados antigos continuam perfeitamente legíveis.</p>
+</li>
+<li>
+<p><strong>Time Travel e Auditoria</strong>:</p>
+</li>
+<li>Como os arquivos de versões antigas não são apagados imediatamente, qualquer usuário ou job pode consultar a tabela exatamente como ela existia em qualquer ponto do tempo passado, essencial para reprodutibilidade de modelos de IA e auditoria de faturamento.</li>
+</ol>
+<hr />
+<h2 id="4-cenario-pratico-do-trabalho-o-conjunto-de-dados-metacritic">4. Cenário Prático do Trabalho: O Conjunto de Dados Metacritic<a class="headerlink" href="#4-cenario-pratico-do-trabalho-o-conjunto-de-dados-metacritic" title="Permanent link">&para;</a></h2>
+<h3 id="descricao-do-dataset">Descrição do Dataset<a class="headerlink" href="#descricao-do-dataset" title="Permanent link">&para;</a></h3>
+<p>O cenário de negócio implementado baseia-se em um conjunto de dados analítico de avaliações de jogos do <strong>Metacritic</strong> (<code>metacritic_dataset_raw_sep_2025.csv</code>), compreendendo <strong>36.831 registros brutos</strong>.</p>
+<p>O dataset espelha um desafio real de engenharia de dados: dados provenientes de fontes externas contêm imperfeições, como datas não preenchidas e jogos sem notas consolidadas de usuários ou da crítica especializada (<code>metascore</code> e <code>user_score</code> nulos ou com a marcação textual <code>'tbd'</code>).</p>
+<h3 id="dicionario-de-dados">Dicionário de Dados<a class="headerlink" href="#dicionario-de-dados" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Coluna</th>
+<th style="text-align: left;">Tipo PySpark</th>
+<th style="text-align: left;">Descrição</th>
+<th style="text-align: left;">Registros Nulos no Raw</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Nome comercial do jogo eletrônico</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>platform</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Plataforma de lançamento (PC, PS4, Switch, etc.)</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>release_date</code></td>
+<td style="text-align: left;"><code>DateType</code></td>
+<td style="text-align: left;">Data de lançamento oficial</td>
+<td style="text-align: left;">43</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>metascore</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Nota ponderada da crítica especializada (0 a 100)</td>
+<td style="text-align: left;">5.726</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>user_score</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Nota média do público (0.0 a 10.0 ou 'tbd')</td>
+<td style="text-align: left;">12.336</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>developer</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Empresa de desenvolvimento do jogo</td>
+<td style="text-align: left;">11</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>publisher</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Distribuidora comercial responsável</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>genre</code></td>
+<td style="text-align: left;"><code>StringType</code></td>
+<td style="text-align: left;">Gênero do jogo (FPS, RPG, Action Adventure, etc.)</td>
+<td style="text-align: left;">0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="modelo-logico-de-dados-e-diagrama-entidade-relacionamento-er">Modelo Lógico de Dados e Diagrama Entidade-Relacionamento (ER)<a class="headerlink" href="#modelo-logico-de-dados-e-diagrama-entidade-relacionamento-er" title="Permanent link">&para;</a></h3>
+<p>Para assegurar a qualidade dos dados na camada Bronze sem descartar informações que possam ser enriquecidas posteriormente, adotamos uma estratégia de segregação entre a tabela oficial de jogos e uma tabela de quarentena:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>erDiagram
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    LOCAL_BRONZE_JOGOS {
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        string name PK "Nome do jogo"
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        string platform PK "Plataforma"
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        date release_date "Data de lançamento"
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        string metascore "Nota da crítica (sem nulos)"
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        string user_score "Nota do usuário (sem nulos)"
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        string developer "Desenvolvedora"
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        string publisher "Distribuidora"
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        string genre "Gênero"
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    }
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    LOCAL_BRONZE_QUARENTENA {
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        string name PK "Nome do jogo"
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        string platform PK "Plataforma"
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        date release_date "Data de lançamento"
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>        string metascore "Pode conter NULL ou 'tbd'"
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>        string user_score "Pode conter NULL ou 'tbd'"
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>        string developer "Pode conter NULL"
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>        string publisher "Distribuidora"
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>        string genre "Gênero"
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    }
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    STAGING_UPDATED {
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>        string name "Chave de junção"
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>        string platform "Chave de junção"
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>        string metascore "Nota tratada"
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>        string user_score "Nota tratada"
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>    }
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>    ICEBERG_SNAPSHOTS {
+</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>        timestamp committed_at "Carimbo da transação"
+</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>        bigint snapshot_id PK "ID do Snapshot"
+</span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a>        bigint parent_id "Snapshot pai"
+</span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>        string operation "append | overwrite | delete"
+</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>        string manifest_list "URI do arquivo Avro"
+</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>    }
+</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>
+</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>    LOCAL_BRONZE_QUARENTENA ||--o| STAGING_UPDATED : "Identifica para tratamento"
+</span><span id="__span-4-40"><a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>    STAGING_UPDATED ||--|| LOCAL_BRONZE_JOGOS : "Promove registros saneados (INSERT)"
+</span><span id="__span-4-41"><a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>    STAGING_UPDATED ||--|| LOCAL_BRONZE_QUARENTENA : "Remove da quarentena (MERGE DELETE)"
+</span><span id="__span-4-42"><a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>    LOCAL_BRONZE_JOGOS ||--o{ ICEBERG_SNAPSHOTS : "Auditado por"
+</span><span id="__span-4-43"><a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>    LOCAL_BRONZE_QUARENTENA ||--o{ ICEBERG_SNAPSHOTS : "Auditado por"
+</span></code></pre></div>
+<hr />
+<h3 id="codigos-ddl-data-definition-language">Códigos DDL (Data Definition Language)<a class="headerlink" href="#codigos-ddl-data-definition-language" title="Permanent link">&para;</a></h3>
+<p>No Apache Iceberg com PySpark, a definição estrutural das tabelas pode ser expressa tanto através de SQL ANSI direto quanto de forma programática através da API de DataFrames.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">DDL em SQL ANSI (Iceberg)</label><label for="__tabbed_1_2">DDL Programático via PySpark (<code>StructType</code>)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- Criação do namespace lógico (banco de dados)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">NAMESPACE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">local</span><span class="p">.</span><span class="n">bronze</span><span class="p">;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">-- Criação da tabela principal de Jogos com especificações de tipo</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">local</span><span class="p">.</span><span class="n">bronze</span><span class="p">.</span><span class="n">jogos</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="n">platform</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="n">release_date</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="n">metascore</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="n">user_score</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="n">developer</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="n">publisher</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="n">genre</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="p">)</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">iceberg</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="n">PARTITIONED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="p">(</span><span class="n">genre</span><span class="p">);</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1">-- Criação da tabela de Quarentena para isolamento de dados nulos</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="k">local</span><span class="p">.</span><span class="n">bronze</span><span class="p">.</span><span class="n">quarentena</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="n">platform</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">    </span><span class="n">release_date</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">    </span><span class="n">metascore</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">    </span><span class="n">user_score</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">    </span><span class="n">developer</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">    </span><span class="n">publisher</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="n">genre</span><span class="w"> </span><span class="n">STRING</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="p">)</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">iceberg</span><span class="p">;</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructType</span><span class="p">,</span> <span class="n">StructField</span><span class="p">,</span> <span class="n">StringType</span><span class="p">,</span> <span class="n">DateType</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Criação do Namespace</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">"CREATE NAMESPACE IF NOT EXISTS local.bronze"</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Esquema formal da tabela principal</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">schema_jogos</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"release_date"</span><span class="p">,</span> <span class="n">DateType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"metascore"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"developer"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"publisher"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="n">StructField</span><span class="p">(</span><span class="s2">"genre"</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">])</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="c1"># Criação da tabela vazia inicial no Catálogo Iceberg</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">([],</span> <span class="n">schema_jogos</span><span class="p">)</span> \
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>    <span class="o">.</span><span class="n">writeTo</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span> \
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>    <span class="o">.</span><span class="n">createOrReplace</span><span class="p">()</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="5-evidencias-praticas-de-crud-no-apache-iceberg-com-pyspark">5. Evidências Práticas de CRUD no Apache Iceberg com PySpark<a class="headerlink" href="#5-evidencias-praticas-de-crud-no-apache-iceberg-com-pyspark" title="Permanent link">&para;</a></h2>
+<p>Abaixo apresentamos a execução passo a passo realizada no notebook do projeto (<code>src/spark_iceberg/iceberg-pyspark.ipynb</code>), acompanhada do código fonte real e das saídas emitidas pelo Spark.</p>
+<hr />
+<h3 id="configuracao-inicial-da-sessao">Configuração Inicial da Sessão<a class="headerlink" href="#configuracao-inicial-da-sessao" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jdk</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># Garante o OpenJDK 17 localmente</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">JDK_DIR</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">".jdk"</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">existentes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">JDK_DIR</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"jdk-17*"</span><span class="p">))</span> <span class="k">if</span> <span class="n">JDK_DIR</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="p">[]</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">java_home</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">existentes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">existentes</span> <span class="k">else</span> <span class="n">jdk</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">"17"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">JDK_DIR</span><span class="p">))</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"JAVA_HOME"</span><span class="p">]</span> <span class="o">=</span> <span class="n">java_home</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">java_home</span><span class="si">}</span><span class="s2">/bin:"</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="c1"># Inicialização da SparkSession com Iceberg Runtime 1.6.1 e Hadoop Catalog</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span> \
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>    <span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">"IcebergTest"</span><span class="p">)</span> \
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s1">'spark.jars.packages'</span><span class="p">,</span> <span class="s1">'org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.6.1'</span><span class="p">)</span> \
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.extensions"</span><span class="p">,</span> <span class="s2">"org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions"</span><span class="p">)</span> \
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.catalog.local"</span><span class="p">,</span> <span class="s2">"org.apache.iceberg.spark.SparkCatalog"</span><span class="p">)</span> \
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.catalog.local.type"</span><span class="p">,</span> <span class="s2">"hadoop"</span><span class="p">)</span> \
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.catalog.local.warehouse"</span><span class="p">,</span> <span class="s2">"spark-warehouse/iceberg"</span><span class="p">)</span> \
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>    <span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+</span></code></pre></div>
+<hr />
+<h3 id="1-ingestao-e-carga-inicial-insert-em-lote">1. Ingestão e Carga Inicial (INSERT em Lote)<a class="headerlink" href="#1-ingestao-e-carga-inicial-insert-em-lote" title="Permanent link">&para;</a></h3>
+<p>O pipeline lê o arquivo bruto do Metacritic, identifica as linhas que contêm valores nulos em qualquer coluna e as direciona para a tabela <code>quarentena</code>, enquanto as linhas válidas são inseridas na tabela oficial <code>jogos</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">functions</span> <span class="k">as</span> <span class="n">F</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">RAW_CSV</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"metacritic_dataset_raw_sep_2025.csv"</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span> \
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"header"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> \
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"inferSchema"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> \
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RAW_CSV</span><span class="p">))</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="c1"># Cria condição booleana OR dinâmica para todas as colunas</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="n">null_condition</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">|</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">isNull</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="c1"># 1. Gravação dos dados inconsistentes na Quarentena</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="n">null_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">null_condition</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="n">null_df</span><span class="o">.</span><span class="n">writeTo</span><span class="p">(</span><span class="s2">"local.bronze.quarentena"</span><span class="p">)</span><span class="o">.</span><span class="n">createOrReplace</span><span class="p">()</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="c1"># 2. Inserção dos dados consistentes na tabela principal</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="n">valid_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">~</span><span class="n">null_condition</span><span class="p">)</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="n">valid_df</span><span class="o">.</span><span class="n">writeTo</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"check-nullability"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+</span></code></pre></div>
+<p><strong>Resultado da Carga Inicial:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>+---------+----------+-----------+
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>|namespace| tableName|isTemporary|
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>+---------+----------+-----------+
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>|   bronze|quarentena|      false|
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>|   bronze|     jogos|      false|
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>+---------+----------+-----------+
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>+--------------------+-----------------+------------+---------+----------+--------------+--------------------+-----------------+
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>|                name|         platform|release_date|metascore|user_score|     developer|           publisher|            genre|
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>+--------------------+-----------------+------------+---------+----------+--------------+--------------------+-----------------+
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>|The Legend of Zel...|      Nintendo 64|  1998-11-23|       99|       9.1|      Nintendo|['Nintendo', 'Gra...|Open-World Action|
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>|         SoulCalibur|        Dreamcast|  1999-09-08|       98|       7.6|         Namco|           ['Namco']|      3D Fighting|
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>|         SoulCalibur|iOS (iPhone/iPad)|  1999-09-08|       73|       7.8|         Namco|           ['Namco']|      3D Fighting|
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>|         SoulCalibur|         Xbox 360|  1999-09-08|       79|       7.3|         Namco|           ['Namco']|      3D Fighting|
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>| Grand Theft Auto IV|    PlayStation 3|  2008-04-29|       98|       8.0|Rockstar North|['Rockstar Games'...|Open-World Action|
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>+--------------------+-----------------+------------+---------+----------+--------------+--------------------+-----------------+
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>only showing top 5 rows
+</span></code></pre></div></p>
+<hr />
+<h3 id="2-insert-incremental-de-novos-dados">2. INSERT Incremental de Novos Dados<a class="headerlink" href="#2-insert-incremental-de-novos-dados" title="Permanent link">&para;</a></h3>
+<p>Demonstramos a inserção incremental simulando o cadastro de futuros lançamentos previstos para o ano de 2026:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">new_games_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">([</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="p">(</span><span class="s2">"Gears of War: E-Day"</span><span class="p">,</span> <span class="s2">"Xbox Series X"</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s2">"87"</span><span class="p">,</span> <span class="s2">"8.5"</span><span class="p">,</span> <span class="s2">"The Coalition"</span><span class="p">,</span> <span class="s2">"[Xbox Game Studio]"</span><span class="p">,</span> <span class="s2">"Third Person Shooter"</span><span class="p">),</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="p">(</span><span class="s2">"Gears of War: E-Day"</span><span class="p">,</span> <span class="s2">"PC"</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s2">"83"</span><span class="p">,</span> <span class="s2">"tbd"</span><span class="p">,</span> <span class="s2">"The Coalition"</span><span class="p">,</span> <span class="s2">"[Xbox Game Studio]"</span><span class="p">,</span> <span class="s2">"Third Person Shooter"</span><span class="p">),</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="p">(</span><span class="s2">"The Witcher 3: Wild Hunt - Remastered"</span><span class="p">,</span> <span class="s2">"PC"</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">29</span><span class="p">),</span> <span class="s2">"93"</span><span class="p">,</span> <span class="s2">"8.5"</span><span class="p">,</span> <span class="s2">"CD Projekt Red Studio"</span><span class="p">,</span> <span class="s2">"[CD Projekt, Red, Studio]"</span><span class="p">,</span> <span class="s2">"Action RPG"</span><span class="p">),</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="p">(</span><span class="s2">"The Witcher 3: Wild Hunt - Remastered"</span><span class="p">,</span> <span class="s2">"Nintendo Switch 2"</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">29</span><span class="p">),</span> <span class="s2">"95"</span><span class="p">,</span> <span class="s2">"7.7"</span><span class="p">,</span> <span class="s2">"CD Projekt Red Studio"</span><span class="p">,</span> <span class="s2">"[CD Projekt, Red, Studio]"</span><span class="p">,</span> <span class="s2">"Action RPG"</span><span class="p">)</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="p">],</span> <span class="p">[</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"platform"</span><span class="p">,</span> <span class="s2">"release_date"</span><span class="p">,</span> <span class="s2">"metascore"</span><span class="p">,</span> <span class="s2">"user_score"</span><span class="p">,</span> <span class="s2">"developer"</span><span class="p">,</span> <span class="s2">"publisher"</span><span class="p">,</span> <span class="s2">"genre"</span><span class="p">])</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># Operação INSERT atômica no Iceberg</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="n">new_games_df</span><span class="o">.</span><span class="n">writeTo</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"check-nullability"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+</span></code></pre></div>
+<p>Essa operação gerou o snapshot <code>6461293759149600687</code>, adicionando 4 novos registros e gerando o novo arquivo de dados <code>00002-27-7089a442-*.parquet</code> sem afetar os dados existentes.</p>
+<hr />
+<h3 id="3-operacoes-de-update">3. Operações de UPDATE<a class="headerlink" href="#3-operacoes-de-update" title="Permanent link">&para;</a></h3>
+<p>O Apache Iceberg viabiliza comandos <code>UPDATE</code> diretamente na linguagem SQL ou através de transformações controladas em DataFrames.</p>
+<h4 id="metodo-a-update-via-sql-ansi-puro">Método A: UPDATE via SQL ANSI Puro<a class="headerlink" href="#metodo-a-update-via-sql-ansi-puro" title="Permanent link">&para;</a></h4>
+<p>Executamos uma atualização transacional pontual para preencher o <code>user_score</code> de <em>Super Mario Galaxy</em> na tabela de quarentena:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">UPDATE</span><span class="w"> </span><span class="k">local</span><span class="p">.</span><span class="n">bronze</span><span class="p">.</span><span class="n">quarentena</span><span class="w"> </span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">SET</span><span class="w"> </span><span class="n">user_score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">.</span><span class="mi">9</span><span class="w"> </span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Super Mario Galaxy'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Nintendo Switch'</span><span class="p">;</span>
+</span></code></pre></div>
+<h4 id="metodo-b-update-em-lote-via-dataframe-com-fwhen">Método B: UPDATE em Lote via DataFrame com <code>F.when()</code><a class="headerlink" href="#metodo-b-update-em-lote-via-dataframe-com-fwhen" title="Permanent link">&para;</a></h4>
+<p>Para tratar múltiplos registros simultaneamente, lemos a tabela de quarentena, aplicamos as correções com lógica condicional e gravamos os registros corrigidos na tabela principal:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">pivot_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"local.bronze.quarentena"</span><span class="p">)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">another_new_df</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">pivot_df</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Super Mario Galaxy 2"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Nintendo Switch"</span><span class="p">),</span> <span class="s2">"8.4"</span><span class="p">)</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>                               <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">)))</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"metascore"</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Tony Hawk's Pro Skater 3"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Nintendo 64"</span><span class="p">),</span> <span class="s2">"tbd"</span><span class="p">)</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>                             <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"metascore"</span><span class="p">)))</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Tony Hawk's Pro Skater 3"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Nintendo 64"</span><span class="p">),</span> <span class="s2">"tbd"</span><span class="p">)</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>                               <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">)))</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Metroid Prime"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Wii"</span><span class="p">),</span> <span class="s2">"7.8"</span><span class="p">)</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>                               <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"user_score"</span><span class="p">)))</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>    <span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"metascore"</span><span class="p">,</span> <span class="n">F</span><span class="o">.</span><span class="n">when</span><span class="p">((</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Metroid Prime"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"platform"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Wii"</span><span class="p">),</span> <span class="s2">"tbd"</span><span class="p">)</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>                             <span class="o">.</span><span class="n">otherwise</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"metascore"</span><span class="p">)))</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">~</span><span class="n">null_condition</span><span class="p">)</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="c1"># Inserção das linhas saneadas na tabela de jogos</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="n">another_new_df</span><span class="o">.</span><span class="n">writeTo</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"check-nullability"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">()</span>
+</span></code></pre></div>
+<p><strong>Resultado da Tabela Atualizada:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>+--------------------+---------------+------------+---------+----------+--------------------+--------------------+-------------+
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>|                name|       platform|release_date|metascore|user_score|           developer|           publisher|        genre|
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>+--------------------+---------------+------------+---------+----------+--------------------+--------------------+-------------+
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>|  Super Mario Galaxy|Nintendo Switch|  2007-11-12|      tbd|       7.9|            Nintendo|        ['Nintendo']|3D Platformer|
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>|Super Mario Galaxy 2|Nintendo Switch|  2010-05-23|      tbd|       8.4|  Nintendo EAD Tokyo|['Nintendo', 'iQue']|3D Platformer|
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>|Tony Hawk's Pro S...|    Nintendo 64|  2001-10-30|      tbd|       tbd|Neversoft Enterta...|['Activision', 'S...|      Skating|
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>|       Metroid Prime|            Wii|  2002-11-17|      tbd|       7.8|       Retro Studios|        ['Nintendo']|          FPS|
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>+--------------------+---------------+------------+---------+----------+--------------------+--------------------+-------------+
+</span></code></pre></div></p>
+<hr />
+<h3 id="4-operacoes-de-delete-com-merge-into">4. Operações de DELETE com <code>MERGE INTO</code><a class="headerlink" href="#4-operacoes-de-delete-com-merge-into" title="Permanent link">&para;</a></h3>
+<p>Após transferir os dados tratados para a tabela de jogos, é imperativo expurgar os registros corrigidos da tabela <code>quarentena</code>. No Apache Iceberg, isso pode ser executado atomicamente via instrução <strong><code>MERGE INTO</code></strong>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Registra o DataFrame tratado como uma View Temporária do Spark</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">another_new_df</span><span class="o">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s2">"updated"</span><span class="p">)</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Executa a remoção atômica por correspondência de chaves</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">"""</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="s2">    MERGE INTO local.bronze.quarentena q </span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="s2">    USING updated u </span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="s2">    ON q.name = u.name AND q.platform = u.platform </span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="s2">    WHEN MATCHED THEN DELETE</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="s2">"""</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="evidencia-quantitativa-no-snapshot-do-iceberg">Evidência Quantitativa no Snapshot do Iceberg<a class="headerlink" href="#evidencia-quantitativa-no-snapshot-do-iceberg" title="Permanent link">&para;</a></h4>
+<p>A integridade dessa exclusão é comprovada pela inspeção direta do snapshot <code>7664026871596913710</code> gerado na tabela <code>local.bronze.quarentena</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Propriedade do Metadado Iceberg</th>
+<th style="text-align: left;">Valor Registrado</th>
+<th style="text-align: left;">Significado Técnico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>operation</code></td>
+<td style="text-align: left;"><code>overwrite</code></td>
+<td style="text-align: left;">O Iceberg regravou os blocos afetados aplicando a exclusão atômica</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>deleted-records</code></td>
+<td style="text-align: left;"><strong>12.355</strong></td>
+<td style="text-align: left;">Contagem de registros no arquivo antes da mutação</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>added-records</code></td>
+<td style="text-align: left;"><strong>12.351</strong></td>
+<td style="text-align: left;">Contagem de registros no novo arquivo gerado</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Diferença Líquida</strong></td>
+<td style="text-align: left;"><strong>-4 registros</strong></td>
+<td style="text-align: left;"><strong>Exatamente os 4 registros modificados que foram excluídos com sucesso!</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-time-travel-e-inspecao-de-metadados">6. Time Travel e Inspeção de Metadados<a class="headerlink" href="#6-time-travel-e-inspecao-de-metadados" title="Permanent link">&para;</a></h2>
+<p>Uma das maiores capacidades do Apache Iceberg é a introspecção das suas tabelas de sistema e a navegação temporal pelos snapshots.</p>
+<h3 id="consultando-a-tabela-de-snapshots">Consultando a Tabela de Snapshots<a class="headerlink" href="#consultando-a-tabela-de-snapshots" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">spark</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s2">"SELECT committed_at, snapshot_id, parent_id, operation, summary FROM local.bronze.jogos.snapshots"</span><span class="p">)</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">truncate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Saída Emitida:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>+--------------------+-------------------+-------------------+---------+----------------------------------------------+
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>|committed_at        |snapshot_id        |parent_id          |operation|summary                                       |
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>+--------------------+-------------------+-------------------+---------+----------------------------------------------+
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>|2026-10-04 21:06:39 |6695676003824454030|NULL               |append   |{added-data-files -&gt; 0, added-records -&gt; 0}   |
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>|2026-10-04 21:06:40 |6225175166441985743|6695676003824454030|append   |{added-data-files -&gt; 1, added-records -&gt; 24476}|
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>|2026-10-04 22:35:00 |6461293759149600687|6225175166441985743|append   |{added-data-files -&gt; 4, added-records -&gt; 4}    |
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>|2026-10-04 23:35:55 |5106418812910411597|6461293759149600687|append   |{added-data-files -&gt; 1, added-records -&gt; 4}    |
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>+--------------------+-------------------+-------------------+---------+----------------------------------------------+
+</span></code></pre></div></p>
+<hr />
+<h3 id="como-realizar-consultas-com-time-travel">Como Realizar Consultas com Time Travel<a class="headerlink" href="#como-realizar-consultas-com-time-travel" title="Permanent link">&para;</a></h3>
+<p>Se quisermos ler a tabela <code>jogos</code> exatamente no momento após a carga inicial (desconsiderando os novos lançamentos de 2026 e as retificações posteriores), basta informar o <code>snapshot-id</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Consulta a versão exata do Snapshot 2 (Carga inicial)</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">df_historico</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="n">spark</span><span class="o">.</span><span class="n">read</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"snapshot-id"</span><span class="p">,</span> <span class="mi">6225175166441985743</span><span class="p">)</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="p">)</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total de registros na versão histórica: </span><span class="si">{</span><span class="n">df_historico</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="c1"># Retornará precisamente os 24.476 registros iniciais!</span>
+</span></code></pre></div>
+<p>Ou ainda, navegar utilizando um carimbo de data/hora (<em>Timestamp</em>):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">df_por_tempo</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    <span class="n">spark</span><span class="o">.</span><span class="n">read</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">"as-of-timestamp"</span><span class="p">,</span> <span class="mi">1791158800000</span><span class="p">)</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">"local.bronze.jogos"</span><span class="p">)</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="7-conclusao-e-proximos-passos">7. Conclusão e Próximos Passos<a class="headerlink" href="#7-conclusao-e-proximos-passos" title="Permanent link">&para;</a></h2>
+<p>O <strong>Apache Iceberg</strong> provou ser uma solução robusta e moderna para contornar todos os limites estruturais do Hive tradicional. Ele viabilizou:
+- Transações ACID reais e seguras em ambiente de Lakehouse.
+- Modificações pontuais e em lote com <code>UPDATE</code> e <code>MERGE INTO ... DELETE</code>.
+- Rastreamento transparente de linhagem através de arquivos JSON/Avro imutáveis.
+- Consultas reproduzíveis em qualquer ponto do tempo histórico.</p>
+<blockquote>
+<p>Para analisar a abordagem concorrente desenvolvida pela Databricks e pela Linux Foundation, acesse a página <a href="../delta/">Delta Lake</a>.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
