@@ -11,7 +11,8 @@ dependencies = [
     "pyspark (==3.5.3)",
     "install-jdk (>=1.1.0,<2.0.0)",
     "mkdocs (>=1.6.1,<2.0.0)",
-    "mkdocs-material (>=9.7.7,<10.0.0)"
+    "mkdocs-material (>=9.7.7,<10.0.0)",
+    "delta-spark (==3.3.3)"
 ]
 
 [tool.poetry]

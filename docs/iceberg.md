@@ -6,7 +6,7 @@
 
 O **Apache Iceberg** é um formato aberto de tabela de alto desempenho (*Open Table Format*) projetado para gerenciar petabytes de dados em arquiteturas analíticas modernas. Criado originalmente na **Netflix** em 2018 por Ryan Blue e Dan Weeks e posteriormente aceito como projeto de nível superior (*Top-Level Project*) na Apache Software Foundation, o Iceberg foi concebido com uma missão clara: **eliminar os problemas crônicos das tabelas legadas do Apache Hive em ambientes de armazenamento em nuvem (S3, ADLS, GCS e HDFS)**.
 
-```mermaid
+```text
 flowchart TD
     subgraph HiveLegacy["Tabelas Tradicionais Hive (Baseadas em Diretórios)"]
         HDir["Diretório de Armazenamento<br>/tabela/ano=2024/mes=10/"]
@@ -46,7 +46,7 @@ O Iceberg define que uma **tabela é um estado gerenciado por uma árvore de met
 
 A integridade e o alto desempenho do Apache Iceberg derivam de sua estrutura de metadados organizada em três camadas concêntricas:
 
-```mermaid
+```text
 flowchart TD
     subgraph Layer1["1. Camada de Catálogo (Catalog Layer)"]
         Cat["Iceberg Catalog<br>(Hadoop, REST, Nessie, Hive Metastore, AWS Glue)<br>Garante CAS (Compare-And-Swap) e aponta atomicamente para o vN.metadata.json atual"]
@@ -134,7 +134,7 @@ spark-warehouse/iceberg/bronze/jogos/
 
 ## 3. Recursos Chave do Apache Iceberg
 
-```mermaid
+```text
 mindmap
   root((Recursos do Iceberg))
     Garantias ACID
@@ -201,7 +201,7 @@ O dataset espelha um desafio real de engenharia de dados: dados provenientes de 
 
 Para assegurar a qualidade dos dados na camada Bronze sem descartar informações que possam ser enriquecidas posteriormente, adotamos uma estratégia de segregação entre a tabela oficial de jogos e uma tabela de quarentena:
 
-```mermaid
+```text
 erDiagram
     LOCAL_BRONZE_JOGOS {
         string name PK "Nome do jogo"

@@ -1,107 +1,441 @@
 # Delta Lake: Formato Aberto Transacional para Lakehouse
 
----
-
-> [!IMPORTANT]
-> ### Área de Trabalho do Colega de Equipe
-> Esta página é o espaço reservado e preparado para o colega de equipe responsável pelo módulo do **Delta Lake**.
-> 
-> A estrutura e os tópicos abaixo foram organizados como um guia de referência para manter o mesmo nível de profundidade e rigor técnico das páginas de [Apache Spark (PySpark)](spark.md) e [Apache Iceberg](iceberg.md).
-
----
-
 ## 1. O que é o Delta Lake?
 
-*Seção destinada à introdução e história do Delta Lake:*
-- Criado pela **Databricks** em 2019 e doado para a **Linux Foundation** como projeto de código aberto.
-- Conceito de camada de armazenamento transacional sobre arquivos Parquet em Cloud Object Storage.
-- Objetivo: Trazer confiabilidade, qualidade e desempenho ACID para Data Lakes existentes sem necessidade de migrar para bancos proprietários.
+O Delta Lake é uma camada de armazenamento que adiciona recursos transacionais a Data Lakes. Ele utiliza arquivos Parquet para armazenar os dados e mantém um Transaction Log, localizado no diretório `_delta_log`, para registrar as alterações realizadas na tabela.
 
-```mermaid
-flowchart LR
-    subgraph DataLake["Data Lake Tradicional"]
-        P1["Arquivos Parquet / ORC / JSON"]
-    end
+Entre os principais recursos disponibilizados pelo Delta Lake estão:
 
-    subgraph DeltaLake["Delta Lake"]
-        Log["_delta_log/ (JSON & Checkpoints Parquet)<br>Histórico Transacional Serializado"]
-        Data["Arquivos de Dados Parquet<br>Indexados e Versionados"]
-        Log <--> Data
-    end
+- Transações ACID;
+- Controle de versões;
+- Histórico das operações;
+- Time Travel;
+- Schema Enforcement;
+- Schema Evolution;
+- Operações de INSERT, UPDATE, DELETE e MERGE;
+- Otimização das tabelas por meio do OPTIMIZE.
 
-    DataLake ==>|Adição de Camada Transacional| DeltaLake
-```
+Estrutura simplificada:
+
+Data Lake
+|
++-- Arquivos de dados Parquet
+|
++-- Tabela Delta
+    |
+    +-- Arquivos Parquet
+    |
+    +-- _delta_log
+        |
+        +-- Histórico das transações
+        +-- Estado da tabela
 
 ---
 
-## 2. O Delta Log (`_delta_log/`): O Coração Transacional
+## 2. O Delta Log (`_delta_log/`)
 
-*Explicar como o Delta Lake garante as propriedades ACID:*
-- Registro de transações (*Transaction Log*): cada operação comita um arquivo JSON sequencial (`00000000000000000000.json`, `00000000000000000001.json`).
-- Checkpoints periódicos em Parquet gerados a cada 10 commits para acelerar o estado da tabela.
-- Controle de concorrência com **Serializabilidade Mútua** ou **Write-Serializable**.
+O diretório `_delta_log` é responsável pelo registro das alterações realizadas na tabela Delta.
+
+As operações são registradas em arquivos JSON numerados sequencialmente, por exemplo:
+
+    00000000000000000000.json
+    00000000000000000001.json
+    00000000000000000002.json
+
+Também podem existir checkpoints em Parquet, utilizados para facilitar a reconstrução do estado da tabela.
+
+No experimento, o Delta Log foi analisado diretamente para observar uma operação de UPDATE:
+
+    log_v5 = spark.read.json(
+        os.path.join(delta_log_path, "00000000000000000005.json")
+    )
+
+    log_v5.select(
+        "commitInfo.operation",
+        "commitInfo.operationParameters"
+    ).show(truncate=False)
+
+Resultado:
+
+    |UPDATE|[{"(game_id#5555L = 8589946391)"}]|
+
+Isso demonstra que a operação de atualização ficou registrada no Delta Log juntamente com sua condição.
 
 ---
 
 ## 3. Configuração do PySpark para Delta Lake
 
-*Espaço para demonstrar como configurar a SparkSession com o runtime do Delta:*
+O ambiente utilizado no trabalho utiliza:
 
-```python
-from pyspark.sql import SparkSession
+- Python;
+- PySpark 3.5.3;
+- Delta Lake 3.3.3;
+- JupyterLab;
+- Poetry como gerenciador do projeto.
 
-# Exemplo de inicialização recomendada
-spark = (
-    SparkSession.builder
-    .appName("DeltaLakeTest")
-    .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.2.0")
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    .getOrCreate()
-)
-```
+A configuração utilizada no notebook foi:
 
----
+    from pyspark.sql import SparkSession
+    from delta import configure_spark_with_delta_pip
 
-## 4. Evidências Práticas de CRUD no Delta Lake com PySpark
+    builder = (
+        SparkSession.builder
+        .appName("Trabalho Engenharia de Dados - Delta Lake")
+        .config(
+            "spark.sql.extensions",
+            "io.delta.sql.DeltaSparkSessionExtension"
+        )
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog"
+        )
+    )
 
-*Espaço para documentar as operações DDL e DML executadas no módulo prático do Delta Lake:*
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
-### 4.1. CREATE & DDL
-- Código de criação da tabela Delta e definição do esquema.
-
-### 4.2. INSERT (Carga Inicial e Incremental)
-- Ingestão do conjunto de dados e inserção em lote.
-
-### 4.3. UPDATE (Atualizações Transacionais)
-- Atualização via SQL (`UPDATE tabela SET ...`) ou via API do Delta Lake (`DeltaTable.forPath(...).update(...)`).
-
-### 4.4. DELETE e MERGE INTO
-- Exclusão direta (`DELETE FROM ...`) e operações de Upsert com `MERGE INTO`.
+A versão do Spark utilizada no experimento foi 3.5.3 e o pacote Delta Lake utilizado foi o 3.3.3.
 
 ---
 
-## 5. Recursos de Otimização e Manutenção
+## 4. Dataset utilizado
 
-*Tópicos sugeridos para enriquecer a página:*
-- **Compactação e OPTIMIZE**: Agrupamento de arquivos pequenos (*Small Files Problem*) em arquivos ideais de 1GB.
-- **Z-Ordering (`OPTIMIZE ... ZORDER BY`)**: Técnica de ordenação multidimensional para acelerar filtros de alta cardinalidade.
-- **Time Travel**: Consultas históricas por versão (`VERSION AS OF`) ou data (`TIMESTAMP AS OF`).
-- **VACUUM**: Expurgar arquivos de dados antigos que já expiraram da janela de retenção.
+Foi utilizado um dataset contendo informações sobre jogos avaliados pelo Metacritic.
+
+Campos principais:
+
+- name: string
+- platform: string
+- release_date: date
+- metascore: double
+- user_score: double
+- developer: string
+- publisher: string
+- genre: string
+
+Durante o tratamento inicial:
+
+    Registros originais: 22.224
+    Registros após remoção de duplicados: 21.913
+    Duplicados removidos: 311
+
+Foi utilizada a operação:
+
+    df = df.dropDuplicates()
 
 ---
 
-## 6. Comparativo Síntese: Delta Lake vs. Apache Iceberg
+## 5. Criação da tabela Delta
+
+Os dados foram armazenados em:
+
+    data/delta/metacritic_games
+
+Caminho utilizado:
+
+    import os
+
+    delta_path = os.path.abspath(
+        "../../data/delta/metacritic_games"
+    )
+
+Gravação:
+
+    df.write \
+        .format("delta") \
+        .mode("overwrite") \
+        .save(delta_path)
+
+Registro da tabela:
+
+    spark.sql(f"""
+        CREATE TABLE IF NOT EXISTS metacritic_games
+        USING DELTA
+        LOCATION '{delta_path}'
+    """)
+
+A coluna `game_id` foi utilizada como identificador técnico dos registros durante as demonstrações.
+
+---
+
+## 6. Operações de dados
+
+Neste trabalho foram demonstradas as operações INSERT, UPDATE, DELETE e MERGE.
+
+### 6.1 INSERT
+
+    INSERT INTO metacritic_games (
+        name,
+        platform,
+        release_date,
+        metascore,
+        user_score,
+        developer,
+        publisher,
+        genre,
+        game_id
+    )
+    SELECT
+        name,
+        platform,
+        release_date,
+        metascore,
+        user_score,
+        developer,
+        publisher,
+        genre,
+        (SELECT MAX(game_id) + 1 FROM metacritic_games)
+    FROM novo_jogo;
+
+### 6.2 UPDATE
+
+    UPDATE metacritic_games
+    SET user_score = 9.0
+    WHERE game_id = 8589946391;
+
+O `user_score` passou de 8.5 para 9.0.
+
+### 6.3 DELETE
+
+    DELETE FROM metacritic_games
+    WHERE game_id = 8589946391;
+
+A consulta posterior confirmou que o registro não estava mais presente na versão atual.
+
+### 6.4 MERGE INTO
+
+    MERGE INTO metacritic_games AS target
+    USING merge_data_atualizado AS source
+    ON target.game_id = source.game_id
+
+    WHEN MATCHED THEN
+        UPDATE SET
+            target.metascore = source.metascore,
+            target.user_score = source.user_score
+
+No experimento:
+
+    game_id: 9999999999
+    metascore: 95.0
+    user_score: 9.7
+
+---
+
+## 7. Schema Enforcement
+
+O Schema Enforcement impede que dados incompatíveis com o schema da tabela sejam inseridos.
+
+Foi criado um DataFrame em que `release_date` possuía tipo string, enquanto a tabela esperava date.
+
+    schema_invalido = spark.createDataFrame([
+        (
+            "Schema Test Game",
+            "PC",
+            "texto_invalido",
+            80.0,
+            8.0,
+            "Test Studio",
+            "Test Publisher",
+            "Action",
+            888888888
+        )
+    ], [
+        "name",
+        "platform",
+        "release_date",
+        "metascore",
+        "user_score",
+        "developer",
+        "publisher",
+        "genre",
+        "game_id"
+    ])
+
+Ao realizar o append, a operação foi bloqueada:
+
+    AnalysisException:
+    [DELTA_FAILED_TO_MERGE_FIELDS]
+    Failed to merge fields 'release_date' and 'release_date'
+
+---
+
+## 8. Schema Evolution
+
+O Schema Evolution permite expandir o schema da tabela de forma controlada.
+
+No experimento foi adicionada a coluna:
+
+    rating_category
+
+O schema passou a conter:
+
+    |-- name: string
+    |-- platform: string
+    |-- release_date: date
+    |-- metascore: double
+    |-- user_score: double
+    |-- developer: string
+    |-- publisher: string
+    |-- genre: string
+    |-- game_id: long
+    |-- rating_category: string
+
+Consulta utilizada:
+
+    SELECT
+        name,
+        metascore,
+        user_score,
+        game_id,
+        rating_category
+    FROM metacritic_games
+    WHERE game_id = 7777777777;
+
+Resultado:
+
+    |Schema Evolution Game|88.0|8.8|7777777777|Excelente|
+
+---
+
+## 9. Time Travel
+
+O Time Travel permite consultar versões anteriores de uma tabela Delta.
+
+Foi possível consultar uma versão anterior mesmo após a exclusão do registro:
+
+    SELECT *
+    FROM metacritic_games VERSION AS OF 5
+    WHERE game_id = 8589946391;
+
+Resultado:
+
+    name: Delta Lake Demo Game
+    platform: PC
+    metascore: 85.0
+    user_score: 9.0
+    game_id: 8589946391
+
+Isso demonstra que o histórico transacional permite consultar o estado da tabela em uma versão anterior.
+
+---
+
+## 10. Histórico das operações
+
+O histórico pode ser consultado utilizando:
+
+    DESCRIBE HISTORY metacritic_games;
+
+Durante o experimento foram registradas operações como:
+
+    WRITE
+    UPDATE
+    DELETE
+    OPTIMIZE
+
+A operação de otimização foi registrada como:
+
+    version: 11
+    operation: OPTIMIZE
+
+---
+
+## 11. OPTIMIZE
+
+O comando OPTIMIZE pode realizar compactação dos arquivos de dados.
+
+Código utilizado:
+
+    from delta.tables import DeltaTable
+
+    delta_table = DeltaTable.forName(
+        spark,
+        "metacritic_games"
+    )
+
+    resultado_optimize = (
+        delta_table
+        .optimize()
+        .executeCompaction()
+    )
+
+    resultado_optimize.show(truncate=False)
+
+Antes:
+
+    numFiles: 3
+    sizeInBytes: aproximadamente 786 KB
+
+Depois:
+
+    numFiles: 1
+    sizeInBytes: aproximadamente 665 KB
+
+Nesse experimento foi utilizada somente a compactação. Não foi utilizado Z-Ordering.
+
+---
+
+## 12. Outros recursos de manutenção
+
+### Z-Ordering
+
+O Z-Ordering pode ser utilizado durante a otimização para organizar os dados com base em determinadas colunas.
+
+Exemplo:
+
+    OPTIMIZE metacritic_games
+    ZORDER BY (platform);
+
+Esse recurso não foi utilizado no experimento principal.
+
+### VACUUM
+
+O VACUUM é utilizado para remover arquivos de dados antigos que não são mais necessários pela tabela.
+
+Essa operação não foi executada neste trabalho, pois os arquivos antigos são necessários para demonstrar o funcionamento do Time Travel.
+
+---
+
+## 13. Delta Lake vs. Apache Iceberg
+
+Delta Lake e Apache Iceberg são formatos de tabela voltados para ambientes de Data Lake e Lakehouse.
 
 | Critério | Apache Iceberg | Delta Lake |
-| :--- | :--- | :--- |
-| **Arquitetura de Metadados** | Árvore hierárquica (JSON + Avro) | Log de transações ordenado (JSON + Checkpoint Parquet) |
-| **Governança e Origem** | Apache Software Foundation (Netflix) | Linux Foundation (Databricks) |
-| **Independência de Engine** | Totalmente desacoplado (Spark, Trino, Flink, Dremio, ClickHouse) | Ampla adoção, máxima sinergia com o ecossistema Databricks/Spark |
-| **Particionamento** | Particionamento Oculto (*Hidden Partitioning*) | Particionamento clássico baseado em colunas físicas |
-| **Evolução de Partição** | Suporte nativo sem reescrever dados | Suporte em evolução |
+|---|---|---|
+| Formato de tabela | Iceberg | Delta |
+| Arquivos de dados | Parquet e outros formatos suportados | Parquet |
+| Transações | Sim | Sim |
+| Schema Evolution | Sim | Sim |
+| Time Travel | Sim | Sim |
+| Histórico de alterações | Sim | Sim |
+| Integração com Apache Spark | Sim | Sim |
+| INSERT, UPDATE, DELETE | Sim | Sim |
+| MERGE | Sim | Sim |
+| Otimização | Recursos próprios do ecossistema | OPTIMIZE |
+| Transaction Log | Metadados e snapshots do Iceberg | `_delta_log` |
+
+Os dois formatos possuem objetivos semelhantes, mas utilizam mecanismos internos diferentes para controlar metadados, versões e alterações das tabelas.
 
 ---
 
-> [!TIP]
-> O código do notebook do Delta Lake pode ser adicionado em `src/spark_delta_lake/` seguindo o modelo adotado no módulo do [Apache Iceberg](iceberg.md).
+## 14. Conclusão
+
+A implementação demonstrou os principais recursos do Delta Lake utilizando PySpark.
+
+Foram realizados experimentos com:
+
+- criação de uma tabela Delta;
+- inserção de registros;
+- atualização de registros;
+- exclusão de registros;
+- MERGE;
+- Schema Enforcement;
+- Schema Evolution;
+- Time Travel;
+- análise do Delta Log;
+- consulta do histórico;
+- OPTIMIZE.
+
+Os experimentos permitiram observar como o Delta Lake adiciona controle transacional, histórico e gerenciamento de versões a uma estrutura baseada em arquivos.
+
+A implementação completa pode ser consultada no notebook:
+
+    src/spark_delta_lake/delta-pyspark.ipynb

@@ -226,3 +226,5 @@ __marimo__/
 .jdk/
 spark-warehouse/
 site/
+
+data/delta/.virtual_documents/
